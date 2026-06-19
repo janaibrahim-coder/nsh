@@ -17,6 +17,7 @@ void Executer::execute(const std::vector<std::string>& tokens) {
   std::vector<std::string> cmdTokens;
   std::string outputFile;
   bool hasRedirect = false;
+  bool runInBackground = false;
 
   for (size_t i = 0; i < tokens.size(); ++i) {
     if (tokens[i] == ">") {
@@ -25,6 +26,8 @@ void Executer::execute(const std::vector<std::string>& tokens) {
         outputFile = tokens[i + 1];
       }
       ++i;
+    } else if (tokens[i] == "&") {
+      runInBackground = true;
     } else {
       cmdTokens.push_back(tokens[i]);
     }
@@ -66,6 +69,10 @@ void Executer::execute(const std::vector<std::string>& tokens) {
       std::cerr << tokens[0] << ": " << msg << std::endl;
     }
   } else {  // parent process (pid > 0)
-    waitpid(pid, nullptr, 0);
+    if (runInBackground) {
+      std::cout << "[background pid " << pid << "]" << std::endl;
+    } else {
+      waitpid(pid, nullptr, 0);
+    }
   }
 }
