@@ -5,7 +5,24 @@
 #include <cstdlib>
 #include <iostream>
 
+std::vector<std::string> Builtins::history;
+
+std::string Builtins::joinTokens(const std::vector<std::string>& tokens) {
+  std::string result;
+
+  for (size_t i = 0; i < tokens.size(); ++i) {
+    if (i > 0) {
+      result += " ";
+    }
+    result += tokens[i];
+  }
+
+  return result;
+}
+
 bool Builtins::handle(const std::vector<std::string>& tokens) {
+  history.push_back(joinTokens(tokens));
+
   if (tokens[0] == "exit") {
     std::exit(EXIT_SUCCESS);
   } else if (tokens[0] == "cd") {
@@ -28,6 +45,12 @@ bool Builtins::handle(const std::vector<std::string>& tokens) {
 
         std::cerr << "cd: " << msg << ": " << path << std::endl;
       }
+    }
+
+    return true;
+  } else if (tokens[0] == "history") {
+    for (size_t i = 0; i < history.size(); ++i) {
+      std::cout << i + 1 << "  " << history[i] << std::endl;
     }
 
     return true;
